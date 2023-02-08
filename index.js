@@ -153,8 +153,8 @@ async function main() {
             }
         }
         const newCommentText = newLines.join('\n');
-        console.log(newCommentText);
-
+        if (process.env.DEBUG == 'true') console.log(newCommentText);
+        
         // Make a GraphQL request to edit the comment
         await axios.post(
             'https://graphql.anilist.co',
