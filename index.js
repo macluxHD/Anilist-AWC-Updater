@@ -132,6 +132,8 @@ async function main() {
                     console.log(err.response.data);
                 });
 
+                if (!animeResponse) continue;
+
                 // Extract the data from the response
                 const Media = animeResponse.data.data.Media;
                 const progress = Media.mediaListEntry.progress;
@@ -156,6 +158,7 @@ async function main() {
         if (process.env.DEBUG == 'true') console.log(newCommentText);
         
         // Make a GraphQL request to edit the comment
+        const err = '';
         await axios.post(
             'https://graphql.anilist.co',
             {
@@ -177,8 +180,15 @@ async function main() {
                     Authorization: `Bearer ${process.env.ANILIST_API_TOKEN}`,
                 },
             }
-        );
-    }
+        ).catch((err) => {
+            err = err.response.data;
+        });;
+
+        if (err != '') {
+            console.log(`Failed to update comment`);
+            console.log(err);
+            continue;
+        }
         console.log(`Updated comment ${commentId}`);
     }
     console.log('Done');
