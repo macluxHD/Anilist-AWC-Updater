@@ -1,5 +1,6 @@
 const axios = require('axios');
 const fs = require('fs');
+const cron = require('node-cron');
 require('dotenv').config();
 
 function formatDate(date) {
@@ -201,4 +202,4 @@ if (!process.env.SCHEDULE) {
     return;
 }
 
-cron.schedule(process.env.SCHEDULE, main());
+cron.schedule(process.env.SCHEDULE, main);
