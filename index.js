@@ -195,3 +195,10 @@ async function main() {
 }
 
 main();
+
+if (!process.env.SCHEDULE) {
+    console.log('No schedule specified, exiting...');
+    return;
+}
+
+cron.schedule(process.env.SCHEDULE, main());
