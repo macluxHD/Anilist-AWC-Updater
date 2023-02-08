@@ -21,6 +21,15 @@ const ANILIST_CLIENT_SECRET = process.env.ANILIST_CLIENT_SECRET;
 const DEBUG = process.env.DEBUG == 'true';
 const SCHEDULE = process.env.SCHEDULE;
 
+// check if tokens are set
+function checkTokens() {
+    if(!ANILIST_API_TOKEN || ANILIST_API_TOKEN == "your_api_token" || !ANILIST_CLIENT_ID || ANILIST_CLIENT_ID == "your_client_id" || !ANILIST_CLIENT_SECRET || ANILIST_CLIENT_SECRET == "your_client_secret") {
+        console.log("Please set the needed tokens to autenticate with anilist for more information read the README");
+        return false;
+    }
+    return true;
+}
+
 async function main() {
     // check if JSON file exists
     if (!fs.existsSync('comments.json')) {
@@ -29,8 +38,11 @@ async function main() {
 
         console.log("comments.json file doesn't exist, creating it now");
         console.log('Please add the links to the comments you want to update to the comments.json file and run the script again');
+
+        checkTokens();
         return;
     }
+    if (!checkTokens()) return;
 
     // Read the JSON file containing the links to the comments to update
     const links = JSON.parse(fs.readFileSync('comments.json', 'utf8'));
