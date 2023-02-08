@@ -4,3 +4,4 @@ node_modules
 .env.example
 .package-lock.json
 comments.json
+.github
