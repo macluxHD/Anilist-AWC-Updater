@@ -33,6 +33,8 @@ async function main() {
         return;
     }
 
+    console.log(`Updating ${links.length} comments...`);
+
     for (const link of links) {
         // Extract the comment ID from the link
         const commentId = link.split('/').slice(-1)[0];
@@ -177,6 +179,9 @@ async function main() {
             }
         );
     }
+        console.log(`Updated comment ${commentId}`);
+    }
+    console.log('Done');
 }
 
 main();
