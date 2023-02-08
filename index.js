@@ -15,6 +15,12 @@ function formatDate(date) {
     return date;
 }
 
+const ANILIST_API_TOKEN = process.env.ANILIST_API_TOKEN;
+const ANILIST_CLIENT_ID = process.env.ANILIST_CLIENT_ID;
+const ANILIST_CLIENT_SECRET = process.env.ANILIST_CLIENT_SECRET;
+const DEBUG = process.env.DEBUG == 'true';
+const SCHEDULE = process.env.SCHEDULE;
+
 async function main() {
     // check if JSON file exists
     if (!fs.existsSync('comments.json')) {
@@ -58,7 +64,7 @@ async function main() {
             {
                 headers: {
                     'Content-Type': 'application/json',
-                    Authorization: `Bearer ${process.env.ANILIST_API_TOKEN}`,
+                    Authorization: `Bearer ${ANILIST_API_TOKEN}`,
                 },
             }
         ).catch((err) => {
@@ -126,7 +132,7 @@ async function main() {
                     {
                         headers: {
                             'Content-Type': 'application/json',
-                            Authorization: `Bearer ${process.env.ANILIST_API_TOKEN}`,
+                            Authorization: `Bearer ${ANILIST_API_TOKEN}`,
                         },
                     }
                 ).catch((err) => {
@@ -156,7 +162,7 @@ async function main() {
             }
         }
         const newCommentText = newLines.join('\n');
-        if (process.env.DEBUG == 'true') console.log(newCommentText);
+        if (DEBUG) console.log(newCommentText);
         
         // Make a GraphQL request to edit the comment
         const err = '';
@@ -178,7 +184,7 @@ async function main() {
             {
                 headers: {
                     'Content-Type': 'application/json',
-                    Authorization: `Bearer ${process.env.ANILIST_API_TOKEN}`,
+                    Authorization: `Bearer ${ANILIST_API_TOKEN}`,
                 },
             }
         ).catch((err) => {
@@ -197,9 +203,9 @@ async function main() {
 
 main();
 
-if (!process.env.SCHEDULE) {
+if (!SCHEDULE) {
     console.log('No schedule specified, exiting...');
     return;
 }
 
-cron.schedule(process.env.SCHEDULE, main);
+cron.schedule(SCHEDULE, main);
