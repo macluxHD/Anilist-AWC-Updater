@@ -1,7 +1,10 @@
 const axios = require('axios');
 const fs = require('fs');
 const cron = require('node-cron');
+const log4js = require("log4js");
 require('dotenv').config();
+
+var logger = log4js.getLogger("Updater");
 
 function formatDate(date) {
     if (date === null) {
@@ -21,10 +24,12 @@ const ANILIST_CLIENT_SECRET = process.env.ANILIST_CLIENT_SECRET;
 const DEBUG = process.env.DEBUG == 'true';
 const SCHEDULE = process.env.SCHEDULE;
 
+logger.level = DEBUG ? 'debug' : 'info';
+
 // check if tokens are set
 function checkTokens() {
-    if(!ANILIST_API_TOKEN || ANILIST_API_TOKEN == "your_api_token" || !ANILIST_CLIENT_ID || ANILIST_CLIENT_ID == "your_client_id" || !ANILIST_CLIENT_SECRET || ANILIST_CLIENT_SECRET == "your_client_secret") {
-        console.log("Please set the needed tokens to autenticate with anilist for more information read the README");
+    if (!ANILIST_API_TOKEN || ANILIST_API_TOKEN == "your_api_token" || !ANILIST_CLIENT_ID || ANILIST_CLIENT_ID == "your_client_id" || !ANILIST_CLIENT_SECRET || ANILIST_CLIENT_SECRET == "your_client_secret") {
+        logger.error("Please set the needed tokens to autenticate with anilist for more information read the README");
         return false;
     }
     return true;
@@ -36,8 +41,8 @@ async function main() {
         // if not, create it
         fs.writeFileSync('comments.json', '[]');
 
-        console.log("comments.json file doesn't exist, creating it now");
-        console.log('Please add the links to the comments you want to update to the comments.json file and run the script again');
+        logger.info("comments.json file doesn't exist, creating it now");
+        logger.info('Please add the links to the comments you want to update to the comments.json file and run the script again');
 
         checkTokens();
         return;
@@ -48,11 +53,11 @@ async function main() {
     const links = JSON.parse(fs.readFileSync('comments.json', 'utf8'));
 
     if (links.length === 0) {
-        console.log('Please add the links to the comments you want to update to the comments.json file and run the script again');
+        logger.error('Please add the links to the comments you want to update to the comments.json file and run the script again');
         return;
     }
 
-    console.log(`Updating ${links.length} comments...`);
+    logger.info(`Updating ${links.length} comments...`);
 
     for (const link of links) {
         // Extract the comment ID from the link
@@ -80,7 +85,7 @@ async function main() {
                 },
             }
         ).catch((err) => {
-            console.log(err.response.data);
+            logger.error(err.response.data);
         });
 
         // Extract the comment text from the response
@@ -148,7 +153,7 @@ async function main() {
                         },
                     }
                 ).catch((err) => {
-                    console.log(err.response.data);
+                    logger.error(err.response.data);
                 });
 
                 if (!animeResponse) continue;
@@ -174,8 +179,8 @@ async function main() {
             }
         }
         const newCommentText = newLines.join('\n');
-        if (DEBUG) console.log(newCommentText);
-        
+        logger.debug(newCommentText);
+
         // Make a GraphQL request to edit the comment
         const err = '';
         await axios.post(
@@ -204,19 +209,19 @@ async function main() {
         });;
 
         if (err != '') {
-            console.log(`Failed to update comment`);
-            console.log(err);
+            logger.error(`Failed to update comment`);
+            logger.error(err);
             continue;
         }
-        console.log(`Updated comment ${commentId}`);
+        logger.info(`Updated comment ${commentId}`);
     }
-    console.log('Done');
+    logger.info('Done');
 }
 
 main();
 
 if (!SCHEDULE) {
-    console.log('No schedule specified, exiting...');
+    logger.info('No schedule specified, exiting...');
     return;
 }
 
