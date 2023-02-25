@@ -209,7 +209,7 @@ async function main() {
             }
         }
 
-        if (finishDate.indexOf('YYYY-MM-DD') !== -1 && seriesAmount === finishedSeriesAmount) {
+        if (!moment(finishDate, "YYYY-MM-DD").isValid() && seriesAmount === finishedSeriesAmount) {
             newLines[finishDateIndex] = `Challenge Finish Date: ${moment().format('YYYY-MM-DD')}`;
         }
 
