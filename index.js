@@ -23,6 +23,7 @@ const ANILIST_CLIENT_ID = process.env.ANILIST_CLIENT_ID;
 const ANILIST_CLIENT_SECRET = process.env.ANILIST_CLIENT_SECRET;
 const DEBUG = process.env.DEBUG == 'true';
 const SCHEDULE = process.env.SCHEDULE;
+const COMMENTS = process.env.COMMENTS;
 
 logger.level = DEBUG ? 'debug' : 'info';
 
@@ -35,25 +36,33 @@ function checkTokens() {
     return true;
 }
 
-async function main() {
-    // check if JSON file exists
-    if (!fs.existsSync('comments.json')) {
-        // if not, create it
-        fs.writeFileSync('comments.json', '[]');
+function getComments() {
+    if (!COMMENTS) {
+        // check if JSON file exists if not, create it
+        if (!fs.existsSync('comments.json')) {
+            fs.writeFileSync('comments.json', '[]');
 
-        logger.info("comments.json file doesn't exist, creating it now");
-        logger.info('Please add the links to the comments you want to update to the comments.json file and run the script again');
+            logger.info("comments.json file doesn't exist, creating it now");
+            logger.info('Please add the links to the comments you want to update to the comments.json file and run the script again');
 
-        checkTokens();
-        return;
+            return false;
+        }
+
+        return JSON.parse(fs.readFileSync('comments.json', 'utf8'));
     }
-    if (!checkTokens()) return;
+    // return the comments from the env variable as an array
+    return COMMENTS.split(',');
+}
+
+async function main() {
 
     // Read the JSON file containing the links to the comments to update
-    const links = JSON.parse(fs.readFileSync('comments.json', 'utf8'));
+    const links = getComments();
 
-    if (links.length === 0) {
-        logger.error('Please add the links to the comments you want to update to the comments.json file and run the script again');
+    if (!checkTokens()) return;
+
+    if (!links || links.length === 0) {
+        logger.error('Please add the links to the comments you want to update to the comments.json file or to the COMMENTS env variable and run the script again');
         return;
     }
 
