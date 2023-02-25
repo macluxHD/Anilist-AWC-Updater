@@ -1,22 +1,11 @@
 const axios = require('axios');
 const fs = require('fs');
 const cron = require('node-cron');
-const log4js = require("log4js");
+const log4js = require('log4js');
+const moment = require('moment');
 require('dotenv').config();
 
 var logger = log4js.getLogger("Updater");
-
-function formatDate(date) {
-    if (date === null) {
-        return '00';
-    }
-
-    if (date < 10) {
-        return '0' + date;
-    }
-
-    return date;
-}
 
 const ANILIST_API_TOKEN = process.env.ANILIST_API_TOKEN;
 const ANILIST_CLIENT_ID = process.env.ANILIST_CLIENT_ID;
@@ -80,6 +69,7 @@ async function main() {
                     query($id: Int!) {
                         ThreadComment(id: $id) {
                             comment(asHtml: false)
+                            createdAt
                         }
                     }
                 `,
@@ -99,20 +89,23 @@ async function main() {
 
         // Extract the comment text from the response
         const commentText = commentResponse.data.data.ThreadComment[0].comment;
+        const createdAtDate = moment(commentResponse.data.data.ThreadComment[0].createdAt * 1000).format('YYYY-MM-DD');
 
         // Split the comment text into lines
         const lines = commentText.split('\n');
 
-        // Find the lines that contain the start and finish dates of the challenge
-        const startDateLine = lines.find((line) => line.startsWith('Challenge Start Date:'));
+        // Find the line that contains the finish date of the challenge
         const finishDateLine = lines.find((line) => line.startsWith('Challenge Finish Date:'));
 
-        // Extract the start and finish dates from the lines
-        const startDate = startDateLine.split(': ')[1];
+        // Extract the finish date from the lines
         const finishDate = finishDateLine.split(': ')[1];
 
-        var isNextLine = false;
-        var animeId = null;
+        let finishDateIndex = -1;
+        let seriesAmount = 0;
+        let finishedSeriesAmount = 0;
+
+        let isNextLine = false;
+        let animeId = null;
 
         // Generate the new comment text Lines
         const newLines = [...lines];
@@ -168,25 +161,44 @@ async function main() {
                 if (!animeResponse) continue;
 
                 // Extract the data from the response
-                const Media = animeResponse.data.data.Media;
-                const progress = Media.mediaListEntry.progress;
-                const animeEpisodes = Media.episodes;
+                const media = animeResponse.data.data.Media;
+                const mediaListEntry = media.mediaListEntry;
+                const progress = mediaListEntry.progress;
+                const animeEpisodes = media.episodes;
 
-                // extract the start and finish dates from the response data and format them as YYYY-MM-DD and if the date is null, replace it with a 0
-                const seriesStartDate = (Media.mediaListEntry.startedAt.year || '0000') + '-' + formatDate(Media.mediaListEntry.startedAt.month) + '-' + formatDate(Media.mediaListEntry.startedAt.day);
-                const seriesFinishDate = (Media.mediaListEntry.completedAt.year || '0000') + '-' + formatDate(Media.mediaListEntry.completedAt.month) + '-' + formatDate(Media.mediaListEntry.completedAt.day);
+                const startedAt = mediaListEntry.startedAt;
+                const completedAt = mediaListEntry.completedAt;
+
+                // extract the start and finish dates from the response data
+                const startedAtDate = moment(`${startedAt.year}-${startedAt.month}-${startedAt.day}`, "YYYY-MM-DD");
+                const completedAtDate = moment(`${completedAt.year}-${completedAt.month}-${completedAt.day}`, "YYYY-MM-DD");
+
+                // if the start or finish date is invalid, replace it with 0000-00-00
+                const seriesStartDate = startedAtDate.isValid() ? startedAtDate.format('YYYY-MM-DD') : '0000-00-00';
+                const seriesFinishDate = completedAtDate.isValid() ? completedAtDate.format('YYYY-MM-DD') : '0000-00-00';
 
                 // Replace the line with an updated line containing the anime title and episode count
-                var res = `Start: ${seriesStartDate} Finish: ${seriesFinishDate} // Ep: ${progress}/${animeEpisodes}`
+                let res = `Start: ${seriesStartDate} Finish: ${seriesFinishDate} // Ep: ${progress}/${animeEpisodes}`
 
                 // modify second last line from the current line
                 if (progress === animeEpisodes) {
                     // replace ❌ with  ✅
                     newLines[i - 2] = newLines[i - 2].replace('❌', '✅');
+                    finishedSeriesAmount++;
                 }
                 newLines[i] = res;
+                seriesAmount++;
+            } else if (line.startsWith('Challenge Start Date:')) {
+                newLines[i] = `Challenge Start Date: ${createdAtDate}`;
+            } else if (line.startsWith('Challenge Finish Date:')) {
+                finishDateIndex = i;
             }
         }
+
+        if (finishDate.indexOf('YYYY-MM-DD') !== -1 && seriesAmount === finishedSeriesAmount) {
+            newLines[finishDateIndex] = `Challenge Finish Date: ${moment().format('YYYY-MM-DD')}`;
+        }
+
         const newCommentText = newLines.join('\n');
         logger.debug(newCommentText);
 
@@ -196,12 +208,12 @@ async function main() {
             'https://graphql.anilist.co',
             {
                 query: `
-                    mutation($id: Int!, $text: String!) {
-                       SaveThreadComment(id: $id, comment: $text) {
+                mutation($id: Int!, $text: String!) {
+                    SaveThreadComment(id: $id, comment: $text) {
                         id
-                      }
                     }
-                  `,
+                }
+                `,
                 variables: {
                     id: commentId,
                     text: newCommentText,
@@ -210,7 +222,7 @@ async function main() {
             {
                 headers: {
                     'Content-Type': 'application/json',
-                    Authorization: `Bearer ${ANILIST_API_TOKEN}`,
+                    Authorization: `Bearer ${ANILIST_API_TOKEN} `,
                 },
             }
         ).catch((err) => {
@@ -222,7 +234,7 @@ async function main() {
             logger.error(err);
             continue;
         }
-        logger.info(`Updated comment ${commentId}`);
+        logger.info(`Updated comment ${commentId} `);
     }
     logger.info('Done');
 }
