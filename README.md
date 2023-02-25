@@ -28,14 +28,18 @@ DEBUG=false
 SCHEDULE=0 0 * * *
 ```
 
-run the script with npm start the comments.json file will be created in the root directory just add the links of the comments you want to update to the array in the file.
+If you want to use it in a container it may be more convenient to set the COMMENTS environment variable than using the comments.json file just add the links to the comments seperated with a `,` it should look like this:
 
-example of the array:
+```
+COMMENTS=https://anilist.co/forum/thread/59679/comment/2077484,https://anilist.co/forum/thread/61848/comment/2155941
+```
+
+You can also use the comments.json file. Just run the script with `npm start` this will create the comments.json file in the root of the directory. Next add the links of the comments you want to update to the array in the file like this:
 
 ```
 [
-"https://anilist.co/forum/thread/59679/comment/2077484",
-"https://anilist.co/forum/thread/61848/comment/2155941"
+    "https://anilist.co/forum/thread/59679/comment/2077484",
+    "https://anilist.co/forum/thread/61848/comment/2155941"
 ]
 ```
 
