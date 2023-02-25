@@ -107,6 +107,19 @@ async function main() {
         let isNextLine = false;
         let animeId = null;
 
+        // extract Completed and Not Completed Symbols
+        const Legend = lines.find((line) => line.startsWith('Legend:'));
+        const regex = /\[(.*?)\]/g;
+        let matches;
+        const symbols = [];
+
+        while ((matches = regex.exec(Legend))) {
+            symbols.push(matches[1]);
+        }
+
+        const completedSymbol = symbols[0];
+        const notCompletedSymbol = symbols[1];
+
         // Generate the new comment text Lines
         const newLines = [...lines];
 
@@ -182,9 +195,10 @@ async function main() {
 
                 // modify second last line from the current line
                 if (progress === animeEpisodes) {
-                    // replace ❌ with  ✅
-                    newLines[i - 2] = newLines[i - 2].replace('❌', '✅');
+                    newLines[i - 2] = newLines[i - 2].replace(/\[(.*?)\]/g, `[${completedSymbol}]`);
                     finishedSeriesAmount++;
+                } else {
+                    newLines[i - 2] = newLines[i - 2].replace(/\[(.*?)\]/g, `[${notCompletedSymbol}]`);
                 }
                 newLines[i] = res;
                 seriesAmount++;
