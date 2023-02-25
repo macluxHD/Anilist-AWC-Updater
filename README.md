@@ -1,3 +1,20 @@
+# Notes
+
+This script can be used with the official [seasonal challenge code](https://docs.google.com/document/d/1hE-R6Nz0n5BaXiwuHLTHv6xeYOjAdIH7lMHhemCqsDc) or any other of their codes like for the monthly challenges. It also supports custom codes as long as some key features remain the same, these would be:
+
+Header:
+
+- `Challenge Start Date:` and `Challenge End Date:`
+- Line that starts with `Legend:` and contains [] Brackets with the Completed Symbol first and the Not Completed Symbol second
+
+Body (for each anime):
+
+- 1st Line: Contains [] Brackets with the Completed or Not Completed symbol
+- 2nd Line: Contains Link to the Anime
+- 3rd Line: Starts with `Start:`
+
+If there is a need for it I can add support for other formats, just create an issue.
+
 # Setup
 
 Set the variables in .env.example and rename the file to .env or if you are running it in a container set the environment variables there.
