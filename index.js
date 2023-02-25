@@ -127,7 +127,7 @@ async function main() {
             const line = newLines[i];
 
             // Check if the line represents an anime on the user's list
-            if (line.startsWith('https://anilist.co/anime/')) {
+            if (line.indexOf('https://anilist.co/anime/') != -1) {
                 // Extract the anime ID from the line
                 animeId = line.match(/\/anime\/(\d+)\//)[1];
                 isNextLine = true;
