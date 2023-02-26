@@ -8,7 +8,6 @@ require('dotenv').config();
 var logger = log4js.getLogger("Updater");
 
 const ANILIST_API_TOKEN = process.env.ANILIST_API_TOKEN;
-const ANILIST_CLIENT_ID = process.env.ANILIST_CLIENT_ID;
 const DEBUG = process.env.DEBUG == 'true';
 const SCHEDULE = process.env.SCHEDULE;
 const COMMENTS = process.env.COMMENTS;
@@ -17,8 +16,8 @@ logger.level = DEBUG ? 'debug' : 'info';
 
 // check if tokens are set
 function checkTokens() {
-    if (!ANILIST_API_TOKEN || ANILIST_API_TOKEN == "your_api_token" || !ANILIST_CLIENT_ID || ANILIST_CLIENT_ID == "your_client_id") {
-        logger.error("Please set the needed tokens to autenticate with anilist for more information read the README");
+    if (!ANILIST_API_TOKEN || ANILIST_API_TOKEN == "your_api_token") {
+        logger.error("Please set the api token to autenticate with anilist for more information read the README");
         return false;
     }
     return true;
