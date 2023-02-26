@@ -39,12 +39,7 @@ https://anilist.co/api/v2/oauth/authorize?client_id={your-application-id}&respon
 
 ## Configuration
 
-```
-DEBUG=false
-SCHEDULE=0 0 * * *
-```
-
-If you want to use it in a container it may be more convenient to set the COMMENTS environment variable than using the comments.json file just add the links to the comments seperated with a `,` it should look like this:
+If you want to use it in a container it may be more convenient to set the `COMMENTS` environment variable than using the comments.json file, just add the links to the comments seperated with a `,` it should look like this:
 
 ```
 COMMENTS=https://anilist.co/forum/thread/59679/comment/2077484,https://anilist.co/forum/thread/61848/comment/2155941
@@ -57,6 +52,11 @@ You can also use the comments.json file. Just run the script with `npm start` th
     "https://anilist.co/forum/thread/59679/comment/2077484",
     "https://anilist.co/forum/thread/61848/comment/2155941"
 ]
+```
+
+```
+DEBUG=false
+SCHEDULE=0 0 * * *
 ```
 
 In the .env file you can set `DEBUG` to `true` to see the new comments in the output.
