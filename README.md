@@ -27,7 +27,7 @@ Set the variables in .env.example and rename the file to .env or if you are runn
 ANILIST_API_TOKEN=your_api_token
 ```
 
-rename .env.example to .env to get the access token for `ANILIST_API_TOKEN` go to the following url or click [here](https://anilist.co/api/v2/oauth/authorize?client_id=10674&response_type=token), you may need to login to get the token.
+To get the api token for `ANILIST_API_TOKEN` go to the following url or click [here](https://anilist.co/api/v2/oauth/authorize?client_id=10674&response_type=token), you may need to login to get the token.
 
 ```
 https://anilist.co/api/v2/oauth/authorize?client_id=10674&response_type=token
