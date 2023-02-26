@@ -19,25 +19,21 @@ If there is a need for it I can add support for other formats, just create an is
 
 Set the variables in .env.example and rename the file to .env or if you are running it in a container set the environment variables there.
 
-## Tokens
+## Configuration
+
+#### API Token
 
 ```
-ANILIST_CLIENT_ID=your_client_id
 ANILIST_API_TOKEN=your_api_token
 ```
 
-Create an api client at the [anilist developer page](https://anilist.co/settings/developer)
-Set API Client Redirect URL to: 'pin'
-
-rename .env.example to .env and replace `your_client_id` of `ANILIST_CLIENT_ID` with the corresponding value from the api client you created.
-
-To get the access token for `ANILIST_API_TOKEN` go to this url and replace `{your-application-id}` with your application id.
+rename .env.example to .env to get the access token for `ANILIST_API_TOKEN` go to the following url or click [here](https://anilist.co/api/v2/oauth/authorize?client_id=10674&response_type=token), you may need to login to get the token.
 
 ```
-https://anilist.co/api/v2/oauth/authorize?client_id={your-application-id}&response_type=token
+https://anilist.co/api/v2/oauth/authorize?client_id=10674&response_type=token
 ```
 
-## Configuration
+#### Comment Links
 
 If you want to use it in a container it may be more convenient to set the `COMMENTS` environment variable than using the comments.json file, just add the links to the comments seperated with a `,` it should look like this:
 
@@ -53,6 +49,8 @@ You can also use the comments.json file. Just run the script with `npm start` th
     "https://anilist.co/forum/thread/61848/comment/2155941"
 ]
 ```
+
+#### Other Settings
 
 ```
 DEBUG=false
