@@ -23,14 +23,13 @@ Set the variables in .env.example and rename the file to .env or if you are runn
 
 ```
 ANILIST_CLIENT_ID=your_client_id
-ANILIST_CLIENT_SECRET=your_client_secret
 ANILIST_API_TOKEN=your_api_token
 ```
 
 Create an api client at the [anilist developer page](https://anilist.co/settings/developer)
 Set API Client Redirect URL to: 'pin'
 
-rename .env.example to .env and fill in the values and then replace `ANILIST_CLIENT_ID` and `ANILIST_CLIENT_SECRET` with the corresponding values from the api client you created.
+rename .env.example to .env and replace `your_client_id` of `ANILIST_CLIENT_ID` with the corresponding value from the api client you created.
 
 To get the access token for `ANILIST_API_TOKEN` go to this url and replace `{your-application-id}` with your application id.
 
