@@ -19,6 +19,8 @@ If there is a need for it I can add support for other formats, just create an is
 
 Set the variables in .env.example and rename the file to .env or if you are running it in a container set the environment variables there.
 
+Run `npm install` once before running the script.
+
 ## Configuration
 
 #### API Token
