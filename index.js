@@ -30,7 +30,6 @@ function getComments() {
             fs.writeFileSync('comments.json', '[]');
 
             logger.info("comments.json file doesn't exist, creating it now");
-            logger.info('Please add the links to the comments you want to update to the comments.json file and run the script again');
 
             return false;
         }
@@ -49,7 +48,7 @@ async function main() {
     if (!checkTokens()) return;
 
     if (!links || links.length === 0) {
-        logger.error('Please add the links to the comments you want to update to the comments.json file or to the COMMENTS env variable and run the script again');
+        logger.info('Please add the links to the comments you want to update to the comments.json file or to the COMMENTS env variable and run the script again');
         return;
     }
 
