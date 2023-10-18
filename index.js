@@ -120,6 +120,9 @@ async function main() {
         // Generate the new comment text Lines
         const newLines = [...lines];
 
+        // Track the last activity date for the end of the challenge date
+        let lastActivityDate = null;
+
         for (let i = 0; i < newLines.length; i++) {
             const line = newLines[i];
 
@@ -186,6 +189,11 @@ async function main() {
                 // if the start or finish date is invalid, replace it with 0000-00-00
                 const seriesStartDate = startedAtDate.isValid() ? startedAtDate.format('YYYY-MM-DD') : '0000-00-00';
                 const seriesFinishDate = completedAtDate.isValid() ? completedAtDate.format('YYYY-MM-DD') : '0000-00-00';
+                
+                // check wheter this anime has a newer completion date
+                if (completedAtDate.isValid() && (!lastActivityDate || completedAtDate.isAfter(lastActivityDate))) {
+                    lastActivityDate = seriesFinishDate;
+                }
 
                 // Replace the line with an updated line containing the anime title and episode count
                 let res = `Start: ${seriesStartDate} Finish: ${seriesFinishDate} // Ep: ${progress}/${animeEpisodes}`
@@ -206,8 +214,8 @@ async function main() {
             }
         }
 
-        if (!moment(finishDate, "YYYY-MM-DD").isValid() && seriesAmount === finishedSeriesAmount) {
-            newLines[finishDateIndex] = `Challenge Finish Date: ${moment().format('YYYY-MM-DD')}`;
+        if (seriesAmount === finishedSeriesAmount) {
+            newLines[finishDateIndex] = `Challenge Finish Date: ${lastActivityDate}`;
         }
 
         const newCommentText = newLines.join('\n');
