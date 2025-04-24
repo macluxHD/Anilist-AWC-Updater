@@ -129,7 +129,7 @@ async function main() {
             // Check if the line represents an anime on the user's list
             if (line.indexOf('https://anilist.co/anime/') != -1) {
                 // Extract the anime ID from the line
-                animeId = line.match(/\/anime\/(\d+)\//)[1];
+                animeId = line.match(/\/anime\/(\d+)\/?/)[1];
                 isNextLine = true;
             } else if (isNextLine && line.startsWith('Start:')) {
                 isNextLine = false;
